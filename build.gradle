@@ -1,0 +1,66 @@
+plugins {
+    id 'java-library'
+    id 'checkstyle'
+    id 'com.github.spotbugs' version '4.7.3'
+    id 'de.aaschmid.cpd' version '3.3'
+    id 'pmd'
+
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.apache.logging.log4j:log4j-core:2.19.0'
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
+}
+
+spotbugs {
+    effort = "max"
+}
+
+pmd {
+    toolVersion = '6.54.0'
+    ignoreFailures = false
+    ruleSetFiles = files("config/pmd/ruleset.xml")
+    ruleSets = []
+}
+
+cpdCheck {
+    reports {
+        text.enabled = false
+        xml.enabled = true
+    }
+    ignoreAnnotations = true
+    source = sourceSets.main.allJava
+}
+
+task checkstyle {
+    dependsOn 'checkstyleMain'
+    dependsOn 'checkstyleTest'
+}
+
+task spotbugs {
+    dependsOn 'spotbugsMain'
+    dependsOn 'spotbugsTest'
+}
+
+task pmd {
+    dependsOn 'pmdMain'
+    dependsOn 'pmdTest'
+}
+
+spotbugsMain {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
+
+spotbugsTest {
+    reports {
+        xml.enabled = false
+        html.enabled = true
+    }
+}
